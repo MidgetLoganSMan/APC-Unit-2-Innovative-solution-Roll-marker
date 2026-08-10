@@ -1,0 +1,1 @@
+import express from "express"; import rollController from "../controllers/rollController.js"; const router = express.Router(); router.get("/:classId", rollController.getClassRoll); router.post("/update", rollController.updateRoll); export default router; 

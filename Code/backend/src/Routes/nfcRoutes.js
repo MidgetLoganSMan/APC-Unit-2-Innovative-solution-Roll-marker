@@ -1,0 +1,1 @@
+import express from "express"; import nfcController from "../controllers/nfcController.js"; const router = express.Router(); router.post("/tap", nfcController.handleTap); export default router; 

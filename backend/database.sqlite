@@ -40,9 +40,10 @@ CREATE TABLE IF NOT EXISTS Timetable (
 );
 
 
-INSERT INTO Teachers (name, email, passwordHash)
+INSERT INTO Teachers (name, email passwordHash)
 VALUES (
     'Mr Smith',
     'teacher@example.com',
     '$2b$10$CwTycUXWue0Thq9StjUM0uJ8vZ8pU1Wv4aENcy9XK6u.ZYIY7MZGa'
 );
+SELECT * FROM Teachers;

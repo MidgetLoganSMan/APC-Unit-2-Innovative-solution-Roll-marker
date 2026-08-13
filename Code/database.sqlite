@@ -1,0 +1,6 @@
+INSERT INTO Teachers (name, email, passwordHash)
+VALUES (
+  'Mr Smith',
+  'teacher@example.com',
+  '$2b$10$QeQw8...hashedpasswordhere'
+);

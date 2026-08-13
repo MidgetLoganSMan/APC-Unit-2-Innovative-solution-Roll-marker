@@ -1,6 +1,48 @@
+CREATE TABLE IF NOT EXISTS Teachers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    passwordHash TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS Students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE,
+    nfcTagId TEXT UNIQUE NOT NULL,
+    currentLocation TEXT,
+    currentClass INTEGER
+);
+CREATE TABLE IF NOT EXISTS Classes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    className TEXT NOT NULL,CREATE TABLE IF NOT EXISTS RollEntries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    studentId INTEGER NOT NULL,
+    classId INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    source TEXT NOT NULL,
+    FOREIGN KEY (studentId) REFERENCES Students(id),
+    FOREIGN KEY (classId) REFERENCES Classes(id)
+);
+
+    teacherId INTEGER NOT NULL,
+    room TEXT,
+    period INTEGER,
+    FOREIGN KEY (teacherId) REFERENCES Teachers(id)
+);
+CREATE TABLE IF NOT EXISTS Timetable (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    studentId INTEGER NOT NULL,
+    classId INTEGER NOT NULL,
+    period INTEGER NOT NULL,
+    FOREIGN KEY (studentId) REFERENCES Students(id),
+    FOREIGN KEY (classId) REFERENCES Classes(id)
+);
+
+
 INSERT INTO Teachers (name, email, passwordHash)
 VALUES (
-  'Mr Smith',
-  'teacher@example.com',
-  '$2b$10$QeQw8...hashedpasswordhere'
+    'Mr Smith',
+    'teacher@example.com',
+    '$2b$10$CwTycUXWue0Thq9StjUM0uJ8vZ8pU1Wv4aENcy9XK6u.ZYIY7MZGa'
 );

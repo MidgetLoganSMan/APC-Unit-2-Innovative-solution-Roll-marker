@@ -153,6 +153,22 @@ in DB Browser for SQLite and inspect `Teachers`, `Students`, `Classes`,
 - `Class not found`: use the numeric class ID printed by `class:add`.
 - Connection refused: start the backend with `npm start` and keep it running.
 
+### Git cannot unlink `backend/database.sqlite`
+
+This means the backend or DB Browser still has the database open. Stop the
+backend with Ctrl+C, close DB Browser for SQLite, and run `git pull` again. If it
+is still locked, restart the computer and pull before reopening either program.
+
+The live database is deliberately ignored by Git. If it does not exist after a
+clone or pull, open a terminal in `backend` and run:
+
+```sh
+npm run db:setup
+```
+
+If your local attendance data matters, copy `backend/database.sqlite` somewhere
+outside the project before pulling, then copy it back afterward.
+
 For a classroom prototype, a UID is convenient. For a real security-sensitive
 system, remember that basic NFC UIDs can be copied; use secure cards and an
 authenticated reader-to-server connection.

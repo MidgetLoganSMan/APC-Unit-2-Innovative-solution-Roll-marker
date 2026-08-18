@@ -1,31 +1,26 @@
-import dotenv from "dotenv";
-import path from "path";
+import dotenv from 'dotenv';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-// Load .env file
+const backendDirectory = fileURLToPath(new URL('../..', import.meta.url));
+
+// Resolve configuration relative to the backend, regardless of launch directory.
 dotenv.config({
-  path: path.resolve(process.cwd(), ".env")
+  path: path.join(backendDirectory, '.env')
 });
 
-// Required environment variables
-const requiredVars = [
-  "JWT_SECRET",
-  "DB_FILE",
-  "PORT"
-];
+const requiredVars = ['JWT_SECRET', 'DB_FILE', 'PORT'];
 
-// Validate required variables
 requiredVars.forEach((key) => {
   if (!process.env[key]) {
-    console.error(`❌ Missing required environment variable: ${key}`);
-    process.exit(1);
+    throw new Error('Missing required environment variable: ' + key);
   }
 });
 
-// Export config object
 const config = {
   port: process.env.PORT,
   jwtSecret: process.env.JWT_SECRET,
-  dbFile: process.env.DB_FILE
+  dbFile: path.resolve(backendDirectory, process.env.DB_FILE)
 };
 
 export default config;

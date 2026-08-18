@@ -1,4 +1,15 @@
 {
+  "name": "roll-marker-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "db:setup": "node scripts/setup-database.js",
+    "db:verify": "node scripts/verify-database.js",
+    "teacher:add": "node scripts/add-teacher.js",
+    "class:add": "node scripts/add-class.js",
+    "student:add": "node scripts/add-student.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",

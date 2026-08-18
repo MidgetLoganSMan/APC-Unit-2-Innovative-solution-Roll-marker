@@ -1,7 +1,14 @@
-import app from "./app.js";
+import app from './app.js';
+import config from './config/env.js';
+import { initializeDB } from './config/db.js';
 
-const PORT = process.env.PORT || 3000;
+try {
+  await initializeDB();
 
-app.listen(PORT, () => {
-  console.log(`Backend running on port ${PORT}`);
-});
+  app.listen(config.port, () => {
+    console.log('Backend running on port ' + config.port);
+  });
+} catch (error) {
+  console.error('Failed to initialise the database:', error);
+  process.exitCode = 1;
+}

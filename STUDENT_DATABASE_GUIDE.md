@@ -65,6 +65,7 @@ npm run student:add -- "Jamie Lee" "jamie.lee@example.com" "04A1B2C3D4" 2
 
 This single command:
 
+
 1. creates the student account;
 2. saves the UID in `Students.nfcTagId`;
 3. sets the student's current class; and
@@ -93,8 +94,9 @@ In Command Prompt, Git Bash, or a macOS/Linux terminal with `curl`, run:
 ```sh
 curl -X POST "http://localhost:3000/api/auth/login" -H "Content-Type: application/json" -d "{\email\:\ms.taylor@example.com\,\password\:\ClassPass123\}"
 ```
+CMD
+curl -X POST "http://localhost:3000/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"ms.taylor@example.com\",\"password\":\"ClassPass123\"}"
 
-A successful response contains a `token`.
 
 ## 8. Test an NFC tap
 
@@ -106,7 +108,10 @@ In PowerShell:
 $tapBody = @{ tagId = "04A1B2C3D4" } | ConvertTo-Json
 Invoke-RestMethod -Method Post -Uri "http://localhost:3000/api/nfc/tap" -ContentType "application/json" -Body $tapBody
 ```
-
+CMD
+'''
+curl -X POST "http://localhost:3000/api/nfc/tap" -H "Content-Type: application/json" -d "{\"tagId\":\"0004383310\"}"
+'''
 In another terminal with `curl`:
 
 ```sh

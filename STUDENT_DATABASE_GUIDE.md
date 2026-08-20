@@ -39,6 +39,7 @@ Use the same teacher email. The last two values are the room and period:
 npm run class:add -- "Year 9 Digital Tech" "ms.taylor@example.com" "C04" 1
 ```
 
+
 Write down the class ID printed by the command. You will use it when adding the
 student.
 

@@ -1,31 +1,39 @@
 import { useState } from "react";
-import { login } from "../api/auth";
 
-export default function Login({ setToken }) {
+export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    const token = await login(email, password);
-    if (token) setToken(token);
+
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (data.token) onLogin(data.token);
   };
 
   return (
     <div>
       <h2>Teacher Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input 
+      <form onSubmit={submit}>
+        <input
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input 
+
+        <input
           placeholder="Password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+
         <button>Login</button>
       </form>
     </div>

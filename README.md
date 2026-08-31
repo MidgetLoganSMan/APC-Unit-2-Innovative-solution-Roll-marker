@@ -20,6 +20,10 @@ sample teacher, class, student, timetable record, and roll entry.
 See [the student database and NFC guide](STUDENT_DATABASE_GUIDE.md) for the full
 teacher, class, student, NFC-linking, and attendance-testing workflow.
 
-The live `backend/database.sqlite` file is local and is not tracked by Git. This
-prevents a running backend or DB Browser from blocking `git pull`. After cloning
-or if the file is missing, recreate it with `npm run db:setup` from `backend`.
+The proof-of-concept `backend/database.sqlite` file is tracked by Git so the
+group can work with the same sample data. SQLite journal, shared-memory, and WAL
+files remain ignored because they are temporary runtime files.
+
+Before pulling or switching branches, stop the backend and close DB Browser.
+Avoid making database changes on multiple branches at the same time because a
+SQLite database is a binary file and Git cannot merge conflicting changes.

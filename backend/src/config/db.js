@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import { readFile } from 'node:fs/promises';
 import config from './env.js';
+import runMigrations from './migrations.js';
 
 let databasePromise;
 
@@ -26,6 +27,7 @@ export async function connectDB() {
 
 export async function initializeDB() {
   const db = await connectDB();
+  await runMigrations(db);
   const schemaPath = new URL('../../-- SQLite.sql', import.meta.url);
   const schema = await readFile(schemaPath, 'utf8');
 

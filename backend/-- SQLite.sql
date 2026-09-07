@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS Students (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE,
-    nfcTagId TEXT UNIQUE NOT NULL,
+    nfcTagId TEXT UNIQUE,
     currentLocation TEXT,
     currentClass INTEGER,
     FOREIGN KEY (currentClass) REFERENCES Classes(id)
@@ -55,6 +55,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_timetable_identity
     ON Timetable (studentId, classId, period);
 CREATE INDEX IF NOT EXISTS idx_roll_entries_class_timestamp
     ON RollEntries (classId, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_roll_entries_student_class_timestamp
+    ON RollEntries (studentId, classId, timestamp DESC);
 
 -- Sample teacher login: teacher@example.com / password123
 INSERT INTO Teachers (name, email, passwordHash)

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
+    "test": "node --test --test-concurrency=1",
     "db:setup": "node scripts/setup-database.js",
     "db:verify": "node scripts/verify-database.js",
     "teacher:add": "node scripts/add-teacher.js",

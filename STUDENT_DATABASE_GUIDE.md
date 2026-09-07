@@ -1,180 +1,131 @@
-# Student guide: add users and connect an NFC tag
+# Student accounts, NFC cards, and attendance
 
-This guide sets up one teacher, one class, and one student. The student's NFC
-tag ID is stored on their database account. When the reader sends that same ID
-to the backend, the backend creates a `present` roll entry automatically.
+The teacher app can now link an existing student account to an NFC card. Once
+linked, tapping that card changes the student's status for the current day to
+`present` and shows the update on the live class roll.
 
-## 1. Prepare the database
+## Start the application
 
-Open any terminal in the project folder (for example VS Code Terminal, Windows
-Terminal, Command Prompt, Git Bash, or macOS/Linux Terminal), then run:
+In one terminal:
 
 ```powershell
 cd backend
 npm install
 npm run db:setup
-npm run db:verify
+npm start
 ```
 
-The last command should report `Database verification passed` and show the
-included sample entry.
-
-## 2. Add a teacher
-
-Run the command below, replacing the example details with your teacher's name,
-email, and password:
+In a second terminal:
 
 ```powershell
-npm run teacher:add -- "Ms Taylor" "ms.taylor@example.com" "ClassPass123"
+cd frontend/teacher-app
+npm install
+npm run dev
 ```
 
-The command hashes the password before it is stored. It prints the new teacher
-ID. Never add a plain-text password directly to the `Teachers` table.
+Open the address printed by Vite. The included sample login is:
 
-## 3. Add a class for the teacher
+- Email: `teacher@example.com`
+- Password: `password123`
 
-Use the same teacher email. The last two values are the room and period:
+## Add a student account
+
+Find the class ID by opening the database in DB Browser or by using the class ID
+returned by `npm run class:add`. A card does not need to be available when the
+account is created:
 
 ```powershell
-npm run class:add -- "Year 9 Digital Tech" "ms.taylor@example.com" "C04" 1
+cd backend
+npm run student:add -- "Jamie Lee" "jamie.lee@example.com" 2
 ```
 
-
-Write down the class ID printed by the command. You will use it when adding the
-student.
-
-## 4. Read the NFC tag ID
-
-1. Connect the NFC reader and run its normal tag-reading sketch or program.
-2. Hold the student's card or tag against the reader.
-3. Copy the UID exactly as the reader reports it, for example `04A1B2C3D4`.
-4. Use one tag per student. The database rejects a UID already assigned to
-   somebody else.
-
-The tag only needs to supply its UID. Do not write the student's name, email, or
-other personal data onto the tag.
-
-## 5. Add the student and link the NFC tag
-
-Replace `2` below with the class ID printed in step 3, and replace the example
-UID with the exact UID from the reader:
+The older one-step form still works when the card UID is already known:
 
 ```powershell
 npm run student:add -- "Jamie Lee" "jamie.lee@example.com" "04A1B2C3D4" 2
 ```
 
-This single command:
+Each student must belong to one of the signed-in teacher's classes before that
+teacher can link a card to the account.
 
+## Link a card in the teacher app
 
-1. creates the student account;
-2. saves the UID in `Students.nfcTagId`;
-3. sets the student's current class; and
-4. creates the linked timetable row.
+1. Sign in and choose the class.
+2. Find a student whose card state says **No card**.
+3. Select **Link card**.
+4. Tap the student's card while the scan box is focused. A keyboard-style USB
+   reader will type the UID and submit it when it sends Enter.
+5. If the reader is a serial device, select **Connect USB serial reader**, choose
+   the connected device, and tap the card. Serial readers must send one UID per
+   line at 9600 baud.
+6. On a supported mobile browser, **Connect Web NFC** can use the device's NFC
+   hardware directly.
 
-## 6. Start the backend
+The UID is normalized before storage, and one UID cannot be assigned to two
+students. Select **Unlink** if the card needs to be reassigned.
 
-```powershell
-npm start
-```
+## Mark attendance with a card
 
-Leave this PowerShell window running. By default, the API is available at
-`http://localhost:3000`.
+Leave the scan box focused and tap a linked card. The backend finds the student,
+updates today's roll entry to `present`, records `NFC` as the source, and returns
+the student's name. The class roll refreshes immediately and also polls every
+three seconds for taps received by another reader process.
 
-## 7. Test the teacher login
+Repeated taps on the same day update the existing entry rather than adding
+duplicates. At the start of a new day, students display as absent until they are
+marked again.
 
-Open a second terminal window in `backend`. In PowerShell, run:
+## Connect a reader bridge
 
-```powershell
-$loginBody = @{ email = "ms.taylor@example.com"; password = "ClassPass123" } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri "http://localhost:3000/api/auth/login" -ContentType "application/json" -Body $loginBody
-```
-
-In Command Prompt, Git Bash, or a macOS/Linux terminal with `curl`, run:
-
-```sh
-curl -X POST "http://localhost:3000/api/auth/login" -H "Content-Type: application/json" -d "{\email\:\ms.taylor@example.com\,\password\:\ClassPass123\}"
-```
-CMD
-curl -X POST "http://localhost:3000/api/auth/login" -H "Content-Type: application/json" -d "{\"email\":\"ms.taylor@example.com\",\"password\":\"ClassPass123\"}"
-
-
-## 8. Test an NFC tap
-
-Use the UID assigned in step 5:
-
-In PowerShell:
-
-```powershell
-$tapBody = @{ tagId = "04A1B2C3D4" } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri "http://localhost:3000/api/nfc/tap" -ContentType "application/json" -Body $tapBody
-```
-CMD
-'''
-curl -X POST "http://localhost:3000/api/nfc/tap" -H "Content-Type: application/json" -d "{\"tagId\":\"0004383310\"}"
-'''
-In another terminal with `curl`:
-
-```sh
-curl -X POST "http://localhost:3000/api/nfc/tap" -H "Content-Type: application/json" -d "{\tagId\:\04A1B2C3D4\}"
-```
-
-A successful response welcomes the student. The backend also inserts a new row
-in `RollEntries` with status `present` and source `NFC`.
-
-For a real reader, configure its software to send the same HTTP request whenever
-it detects a tag:
+A PC/SC reader or microcontroller with its own vendor software can use the HTTP
+interface. Configure the bridge to send the detected UID to:
 
 ```text
-POST /api/nfc/tap
+POST http://localhost:3000/api/nfc/tap
 Content-Type: application/json
 
 {"tagId":"04A1B2C3D4"}
 ```
 
-The `tagId` text must match `Students.nfcTagId` exactly.
-
-## 9. Check the class roll
-
-Replace `2` with the class ID from step 3:
+PowerShell test:
 
 ```powershell
-Invoke-RestMethod -Method Get -Uri "http://localhost:3000/api/roll/2"
+$tap = @{ tagId = "04A1B2C3D4" } | ConvertTo-Json
+Invoke-RestMethod -Method Post `
+  -Uri "http://localhost:3000/api/nfc/tap" `
+  -ContentType "application/json" `
+  -Body $tap
 ```
 
-Or in any terminal with `curl`:
+The web page supports keyboard-emulating, Web Serial, and Web NFC readers. A
+vendor-specific PC/SC reader that exposes none of those interfaces needs a small
+local bridge that calls this endpoint.
 
-```sh
-curl "http://localhost:3000/api/roll/2"
-```
+## API summary
 
-The newest tap should appear first. You can also open `backend/database.sqlite`
-in DB Browser for SQLite and inspect `Teachers`, `Students`, `Classes`,
-`Timetable`, and `RollEntries`.
+Teacher-authenticated endpoints:
+
+- `GET /api/roll/classes` — list the signed-in teacher's classes.
+- `GET /api/roll/:classId` — get today's roster and current status.
+- `PUT /api/student/:studentId/nfc` with `{"tagId":"..."}` — link a card.
+- `DELETE /api/student/:studentId/nfc` — unlink a card.
+- `PUT /api/roll/:classId/students/:studentId` with `{"status":"present"}`
+  — manually update attendance.
+
+Reader endpoint:
+
+- `POST /api/nfc/tap` with `{"tagId":"..."}` — mark the linked student present.
 
 ## Common errors
 
-- `Unknown NFC tag`: the reader's UID does not exactly match the stored value.
-- `NFC tag is already linked`: that UID belongs to another student.
-- `Teacher not found`: add the teacher first or check the email spelling.
-- `Class not found`: use the numeric class ID printed by `class:add`.
-- Connection refused: start the backend with `npm start` and keep it running.
+- `Unknown NFC tag`: no student account is linked to that UID.
+- `That NFC card is already linked`: unlink it from the other student first.
+- `Student not found`: the account is not in a class owned by the signed-in
+  teacher.
+- Connection refused: start the backend and leave it running.
+- Reader not shown: confirm its Windows driver and determine whether it exposes
+  keyboard, serial, Web NFC, or vendor/PC-SC access.
 
-### Git cannot unlink `backend/database.sqlite`
-
-This means the backend or DB Browser still has the database open. Stop the
-backend with Ctrl+C, close DB Browser for SQLite, and run `git pull` again. If it
-is still locked, restart the computer and pull before reopening either program.
-
-The live database is deliberately ignored by Git. If it does not exist after a
-clone or pull, open a terminal in `backend` and run:
-
-```sh
-npm run db:setup
-```
-
-If your local attendance data matters, copy `backend/database.sqlite` somewhere
-outside the project before pulling, then copy it back afterward.
-
-For a classroom prototype, a UID is convenient. For a real security-sensitive
-system, remember that basic NFC UIDs can be copied; use secure cards and an
-authenticated reader-to-server connection.
+For this classroom prototype, the card stores no personal details; only its UID
+is saved on the student record. Basic NFC UIDs can be copied, so a production
+system should also authenticate its reader bridge and use secure cards.

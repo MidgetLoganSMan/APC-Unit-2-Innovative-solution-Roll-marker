@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
-import nfcRoutes from "./routes/nfcRoutes.js";
-import rollRoutes from "./routes/rollRoutes.js";
-import studentRoutes from "./routes/studentRoutes.js";
-import authRoutes from "./routes/authRoutes.js";
+import nfcRoutes from './Routes/nfcRoutes.js';
+import rollRoutes from './Routes/rollRoutes.js';
+import studentRoutes from './Routes/studentRoutes.js';
+import authRoutes from './Routes/authRoutes.js';
 import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();

@@ -1,15 +1,20 @@
 import { closeDB, initializeDB } from '../src/config/db.js';
+import { normalizeTagId } from '../src/utils/nfc.js';
 
-const [name, email, nfcTagId, classIdValue] = process.argv.slice(2);
+const [name, email, thirdValue, fourthValue] = process.argv.slice(2);
+const classIdValue = fourthValue || thirdValue;
 const classId = Number(classIdValue);
 let db;
 let transactionStarted = false;
 
-if (!name || !email || !nfcTagId || !Number.isInteger(classId)) {
-  console.error('Usage: npm run student:add -- <name> <email> <nfcTagId> <classId>');
+if (!name || !email || !Number.isInteger(classId)) {
+  console.error(
+    'Usage: npm run student:add -- <name> <email> [nfcTagId] <classId>'
+  );
   process.exitCode = 1;
 } else {
   try {
+    const nfcTagId = fourthValue ? normalizeTagId(thirdValue) : null;
     db = await initializeDB();
     const selectedClass = await db.get(
       'SELECT id, room, period FROM Classes WHERE id = ?',
@@ -29,7 +34,7 @@ if (!name || !email || !nfcTagId || !Number.isInteger(classId)) {
         'VALUES (?, ?, ?, ?, ?)',
       name.trim(),
       email.trim().toLowerCase(),
-      nfcTagId.trim(),
+      nfcTagId,
       selectedClass.room,
       selectedClass.id
     );
@@ -44,7 +49,7 @@ if (!name || !email || !nfcTagId || !Number.isInteger(classId)) {
     transactionStarted = false;
     console.log(
       'Student added with ID ' + result.lastID +
-        ' and linked to NFC tag ' + nfcTagId.trim()
+        (nfcTagId ? ' and linked to NFC tag ' + nfcTagId : ' without an NFC card')
     );
   } catch (error) {
     if (transactionStarted) {

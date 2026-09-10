@@ -5,7 +5,7 @@ import config from './env.js';
 import runMigrations from './migrations.js';
 
 let databasePromise;
-
+//sink the database connection to a promise so that it can be reused across the application
 export async function connectDB() {
   if (!databasePromise) {
     databasePromise = open({

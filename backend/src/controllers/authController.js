@@ -1,5 +1,5 @@
 import authService from "../services/authService.js";
-
+// Controller for handling authentication-related requests
 const authController = {
   async login(req, res) {
     try {

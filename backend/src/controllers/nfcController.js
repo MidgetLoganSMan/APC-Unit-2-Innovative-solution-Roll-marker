@@ -1,5 +1,5 @@
 import nfcService from "../services/nfcService.js";
-
+// Controller for handling NFC-related requests
 const nfcController = {
   async handleTap(req, res, next) {
     try {

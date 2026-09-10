@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from '../config/env.js';
-
+// Middleware for authenticating requests using JWT
 export default function authMiddleware(req, res, next) {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'Missing token' });

@@ -1,5 +1,5 @@
 import studentService from '../services/StudentService.js';
-
+// Controller for handling student-related requests
 const studentController = {
   async search(req, res, next) {
     try {

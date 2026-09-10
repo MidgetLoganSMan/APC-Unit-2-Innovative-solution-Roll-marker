@@ -3,7 +3,7 @@ async function makeNfcTagsOptional(db) {
   const nfcColumn = columns.find((column) => column.name === 'nfcTagId');
 
   if (!nfcColumn || nfcColumn.notnull === 0) return;
-
+// SQLite does not support altering a column to make it nullable, so we need to create a new table with the desired schema and copy the data over
   await db.exec('PRAGMA foreign_keys = OFF');
   try {
     await db.exec(`

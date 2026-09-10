@@ -1,7 +1,7 @@
 import app from './app.js';
 import config from './config/env.js';
 import { initializeDB } from './config/db.js';
-
+//test can start the server without a database connection
 try {
   await initializeDB();
 

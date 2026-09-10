@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { apiRequest } from '../api';
 
+// Login method that corrects data and links to student cards/id so the correct login can be created. 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

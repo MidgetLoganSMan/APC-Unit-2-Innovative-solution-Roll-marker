@@ -8,7 +8,8 @@ export async function apiRequest(path, options = {}) {
       ...options.headers
     }
   });
-
+// Method is going to get data, await the json file for a responce and check that it is good, if the responce is not ok then its 
+//error message
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(data.error || `Request failed (${response.status})`);

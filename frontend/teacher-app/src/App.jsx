@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import AuthContext from './context/AuthContext';
 import ClassRoll from './pages/ClassRoll';
-
+// puts bibs and bobs into creating the app, the navigation page, react, and authentication
 function App() {
   const [token, setToken] = useState(() => sessionStorage.getItem('teacher-token'));
 
